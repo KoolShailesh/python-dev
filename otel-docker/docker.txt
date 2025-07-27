@@ -1,0 +1,36 @@
+496067516464
+
+
+
+
+docker build -t otelcol-fargate .
+
+
+docker tag otelcol-fargate:latest 496067516464.dkr.ecr.us-east-1.amazonaws.com/otelcol-fargate:latest
+
+aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 496067516464.dkr.ecr.us-east-1.amazonaws.com
+
+docker push 496067516464.dkr.ecr.us-east-1.amazonaws.com/otelcol-fargate:latest
+
+
+
+ 
+
+aws ecs describe-tasks --cluster otel-cluster --tasks 24cc57ca368047ddb8d7fa85cf2f8d09                                                            d7fa85cf2f8d09"
+
+----------------------------------------------
+
+docker tag otelcol-fargate:latest 496067516464.dkr.ecr.us-east-1.amazonaws.com/otelcol-fargate:v1
+
+
+docker push 496067516464.dkr.ecr.us-east-1.amazonaws.com/otelcol-fargate:v1
+
+
+-------------------------------------------------------
+
+docker run --rm \
+  -p 4318:4318 \
+  -p 4317:4317 \
+  -v $(pwd)/otel-config.yaml:/etc/otelcol/config.yaml \
+  otel/opentelemetry-collector-contrib:latest \
+  --config=/etc/otelcol/config.yaml

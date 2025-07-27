@@ -1,0 +1,26 @@
+version: "3.7"
+services:
+  otel-collector:
+    image: public.ecr.aws/aws-observability/aws-otel-collector:latest
+    ports:
+      - "4317:4317"
+    volumes:
+      - ./otel-config.yaml:/otel-config.yaml
+    command: ["--config=/otel-config.yaml"]
+
+  auth-service:
+    build:
+      context: ./auth-service
+    depends_on:
+      - otel-collector
+      - orders-service
+    ports:
+      - "5000:5000"
+    command: python main.py
+
+  orders-service:
+    build:
+      context: ./orders-service
+    ports:
+      - "5001:5001"
+    command: python main.py

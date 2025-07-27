@@ -1,0 +1,8 @@
+python -m venv venv
+
+CMD --> venv\Scripts\activate
+
+Powershell --> .\venv\Scripts\Activate.ps1
+
+
+pip install -r requirements.txt

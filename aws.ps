@@ -1,0 +1,10 @@
+# Update with your bucket name
+export BUCKET_NAME=otel-emr-bucket-example-sh
+export REGION=us-east-1
+
+# Create bucket
+aws s3 mb s3://otel-emr-bucket-example-sh
+
+# Upload OTEL config and bootstrap script
+aws s3 cp -profile personal otel-config.yaml s3://otel-emr-bucket-example-sh/
+aws s3 cp -profile personal emr-bootstrap.sh s3://otel-emr-bucket-example-sh/
