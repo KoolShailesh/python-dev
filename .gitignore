@@ -1,2 +1,4 @@
 .terraform
 no-sync
+.venv
+venv
