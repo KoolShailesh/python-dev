@@ -1,0 +1,89 @@
+server:
+  http_listen_port: 3200
+  http_listen_address: 0.0.0.0
+
+distributor:
+  receivers:
+    otlp:
+      protocols:
+        grpc:
+          endpoint: 0.0.0.0:4317
+        http:
+          endpoint: 0.0.0.0:4318
+    jaeger:
+      protocols:
+        thrift_http:
+          endpoint: 0.0.0.0:14268
+
+ingester:
+  trace_idle_period: 10s
+  max_block_duration: 5m
+
+compactor:
+  compaction:
+    block_retention: 1h
+
+storage:
+  trace:
+    backend: local
+    local:
+      path: /tmp/tempo
+    wal:
+      path: /tmp/tempo/wal
+
+# This is the correct placement for Tempo 2.8.1 for trace attribute search
+# search:
+#   enabled: true # This enables the search API and attribute indexing
+#   backend: local
+#   local:
+#     path: /tmp/tempo/search
+#   attributes:
+#     - correlation_id
+#     - service.name
+#     - http.method
+#     - http.status_code
+#     - http.target
+#     - http.url
+#     - http.route
+#     - rpc.method
+#     - rpc.service
+#     - messaging.system
+#     - messaging.destination
+#     - db.system
+#     - db.name
+#     - db.operation
+#     - net.peer.name
+#     - net.peer.ip
+#     - net.peer.port
+#     - error
+#     # --- ADDITIONS/MODIFICATIONS FOR SEARCH TAGS ---
+#     - host.name
+#     - host.arch
+#     - os.type
+#     - os.description
+#     - container.name
+#     - container.image.name
+#     - container.image.tag
+#     - k8s.pod.name
+#     - k8s.namespace.name
+#     - k8s.cluster.name
+#     - deployment.environment
+#     - resource.exception.type
+#     - exception.type
+#     - exception.message
+#     - peer.service
+#     - client.address
+#     - server.address
+#     - user.id
+#     - enduser.id
+#     - my_app.request.id
+#     - my_app.user.role
+#     - my_app.feature.flag
+#     - my_app.transaction.type
+#     - my_app.error.code
+
+# If you need to configure query_frontend for other reasons (e.g., limits, hedging),
+# it would be a separate top-level block, but it does NOT contain the 'search' for attributes.
+# query_frontend:
+#   max_outstanding_per_tenant: 2000
+#   # etc.
