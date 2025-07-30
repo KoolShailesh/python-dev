@@ -33,11 +33,11 @@ def index():
     correlation_id = generate_correlation_id()
 
     # Inject correlation ID into context baggage
-    token = attach(set_baggage("correlation.id", correlation_id))
+    token = attach(set_baggage("correlation_id", correlation_id))
 
     # Add correlation ID to current span
     span = trace.get_current_span()
-    span.set_attribute("correlation.id", correlation_id)
+    span.set_attribute("correlation_id", correlation_id)
 
     # Log correlation ID and make downstream call
     app.logger.info(f"Calling App B with correlation ID: {correlation_id}")

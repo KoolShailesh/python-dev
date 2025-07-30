@@ -24,17 +24,26 @@ OTEL_COLLECTOR_BASE_URL = f"http://{OTEL_COLLECTOR_HOST}:{OTEL_COLLECTOR_PORT}"
 class OTELFormatter(logging.Formatter):
     def format(self, record):
         try:
-            # Avoid recursion by not calling self.format() inside this block
             span = trace.get_current_span()
             ctx = span.get_span_context() if span else None
 
             trace_id = format(ctx.trace_id, "032x") if ctx and ctx.trace_id else "-"
             span_id = format(ctx.span_id, "016x") if ctx and ctx.span_id else "-"
-            correlation_id = baggage.get_baggage("correlation.id") or "-"
+            correlation_id = baggage.get_baggage("correlation_id") or "-"
 
             record.trace_id = trace_id
             record.span_id = span_id
             record.correlation_id = correlation_id
+
+            # Get base message
+            msg = record.getMessage()
+
+            # Append exception info if present and safely convertible
+            if record.exc_info:
+                try:
+                    msg += "\n" + self.formatException(record.exc_info)
+                except Exception:
+                    pass
 
             return (
                 f"[{self.formatTime(record)}] "
@@ -42,7 +51,7 @@ class OTELFormatter(logging.Formatter):
                 f"trace_id={trace_id} "
                 f"span_id={span_id} "
                 f"correlation_id={correlation_id} - "
-                f"{record.getMessage()}"
+                f"{msg}"
             )
         except Exception:
             return super().format(record)

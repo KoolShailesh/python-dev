@@ -29,7 +29,7 @@ class OTELFormatter(logging.Formatter):
 
             trace_id = format(ctx.trace_id, "032x") if ctx and ctx.trace_id else "-"
             span_id = format(ctx.span_id, "016x") if ctx and ctx.span_id else "-"
-            correlation_id = baggage.get_baggage("correlation.id") or "-"
+            correlation_id = baggage.get_baggage("correlation_id") or "-"
 
             record.trace_id = trace_id
             record.span_id = span_id
