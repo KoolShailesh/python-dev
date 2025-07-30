@@ -1,0 +1,55 @@
+# 1. Deactivate your virtual environment (if it's active)
+Write-Host "Deactivating virtual environment (if active)..."
+if (Get-Command -Name deactivate -ErrorAction SilentlyContinue) {
+    deactivate
+}
+Write-Host "Virtual environment state checked."
+
+# 2. Navigate to the App B directory (if not already there)
+Write-Host "Navigating to project directory..."
+Set-Location -Path "C:\McD-Dev\otel-python-apps\app-b"
+Write-Host "Current directory: $(Get-Location)"
+
+# 3. Remove the .venv directory (your virtual environment)
+Write-Host "Removing virtual environment directory (.\.venv)..."
+Remove-Item -Path ".\.venv" -Recurse -Force -ErrorAction SilentlyContinue
+Write-Host "Virtual environment removed (if it existed)."
+
+# 4. Clear pip's cache. This is CRUCIAL for fresh installs.
+Write-Host "Clearing pip cache..."
+pip cache purge
+Write-Host "Pip cache cleared."
+
+# 5. Remove any __pycache__ folders within your current app-b directory and its subdirectories
+Write-Host "Removing __pycache__ directories..."
+Get-ChildItem -Path "." -Recurse -Directory -ErrorAction SilentlyContinue | Where-Object {$_.Name -eq "__pycache__"} | Remove-Item -Recurse -Force
+Write-Host "__pycache__ directories removed."
+
+# 6. Create a brand new virtual environment
+Write-Host "Creating new virtual environment..."
+python -m venv .venv
+Write-Host "New virtual environment created."
+
+# 7. Activate the new virtual environment
+Write-Host "Activating new virtual environment..."
+.\.venv\Scripts\Activate.ps1
+Write-Host "Virtual environment activated."
+
+# 8. Upgrade pip within the new environment (always good practice)
+Write-Host "Upgrading pip..."
+python.exe -m pip install --upgrade pip
+Write-Host "Pip upgraded."
+
+
+
+# 10. Install all dependencies from requirements.txt
+Write-Host "Installing dependencies from requirements.txt..."
+pip install -r requirements.txt
+Write-Host "Dependency installation attempt complete."
+
+
+Pause
+
+# 14. Run your application
+Write-Host "Attempting to run main.py..."
+python main.py
