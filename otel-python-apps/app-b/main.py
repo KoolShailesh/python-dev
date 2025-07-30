@@ -1,22 +1,14 @@
 from flask import Flask
-import logging
-
 from opentelemetry import baggage, trace
 from otel_setup import configure_otel
+import logging
 
-# Standard logging setup
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger("app-b")
-
-# Create Flask app
 app = Flask(__name__)
-
-# Configure OpenTelemetry tracing, logging, instrumentation
 configure_otel("app-b", app)
+logger = logging.getLogger("app-b")
 
 @app.route("/data")
 def data():
-    # Enrich span with correlation ID from baggage (for trace observability)
     correlation_id = baggage.get_baggage("correlation.id")
     span = trace.get_current_span()
     if span and correlation_id:
