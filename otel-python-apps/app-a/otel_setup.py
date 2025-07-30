@@ -15,10 +15,10 @@ from opentelemetry.instrumentation.requests import RequestsInstrumentor
 from opentelemetry.instrumentation.logging import LoggingInstrumentor
 
 # -------- HARDCODE OTEL COLLECTOR CONFIG --------
-OTEL_COLLECTOR_HOST = "54.174.162.54"
+OTEL_COLLECTOR_HOST = "44.202.25.247"
 OTEL_COLLECTOR_PORT = "4318"
 OTEL_COLLECTOR_BASE_URL = f"http://{OTEL_COLLECTOR_HOST}:{OTEL_COLLECTOR_PORT}"
-# -------------------------------------
+# ---------------------------------44.202.25.247----
 
 
 def configure_otel(service_name: str, app=None):

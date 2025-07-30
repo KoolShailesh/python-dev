@@ -2,3 +2,4 @@
 no-sync
 .venv
 venv
+**/__pycache__
