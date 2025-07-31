@@ -1,0 +1,52 @@
+➤ docker compose up -d
+
+
+➤ Once Kafka is running, you can create a topic:
+
+docker exec -it kafka \
+  kafka-topics --create \
+  --topic my-topic-redshift \
+  --bootstrap-server localhost:9092 \
+  --partitions 3 \
+  --replication-factor 1
+
+
+
+➤ docker ps
+
+
+➤ List Topics to Verify
+
+docker exec -it kafka \
+  kafka-topics --list \
+  --bootstrap-server localhost:9092
+
+  You should see my-topic-redshift listed.
+
+
+
+
+➤ Produce:
+
+
+  docker exec -it kafka \
+  kafka-console-producer --broker-list localhost:9092 --topic my-topic-redshift
+
+hello
+world
+
+
+➤ Consume:
+
+docker exec -it kafka \
+  kafka-console-consumer --bootstrap-server localhost:9092 --topic my-topic-redshift --from-beginning
+
+docker exec -it kafka kafka-console-consumer \
+  --bootstrap-server kafka:29092 \
+  --topic my-topic-redshift \
+  --from-beginning
+
+
+
+
+docker-compose down

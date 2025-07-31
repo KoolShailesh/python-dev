@@ -1,42 +1,62 @@
-from flask import Flask,request 
+from flask import Flask, request
 from opentelemetry import baggage, trace
 from otel_setup import configure_otel
 import logging
+from kafka import KafkaProducer
+import json
+from datetime import datetime
 
 app = Flask(__name__)
-# Configure OpenTelemetry for App B.
-# The `otel_setup.py` will set up the X-Ray propagator to extract
-# trace context and baggage from incoming requests.
 configure_otel("app-b", app)
-logger = logging.getLogger("app-b") # Get a named logger for App B
+logger = logging.getLogger("app-b")
+
+# Kafka setup
+KAFKA_BROKER = "34.238.44.149:9092"
+KAFKA_TOPIC = "my-topic-redshift"
+
+producer = KafkaProducer(
+    bootstrap_servers=KAFKA_BROKER,
+    value_serializer=lambda v: json.dumps(v).encode("utf-8"),
+    key_serializer=str.encode
+)
 
 @app.route("/data")
 def data():
-    """
-    Endpoint for App B to receive requests from App A.
-    It retrieves the correlation_id from baggage and adds it as a span attribute.
-    """
-
-    # --- ADD THIS FOR DEBUGGING ---
-    logger.info(f"App B: Incoming headers: {request.headers}")
-    # --- END DEBUGGING ADDITION ---
-
-    # Retrieve correlation_id from baggage.
-    # The AWSXRayPropagator configured in otel_setup.py will
-    # automatically extract this from the incoming X-Amzn-Trace-Id header if present.
     correlation_id = baggage.get_baggage("correlation_id")
+    logger.info(f"Extracted correlation_id: {correlation_id}")
 
-    # Get the current span and set the correlation_id as an attribute.
-    # This ensures the correlation_id appears in the trace for App B.
+    # Add correlation_id to span
     span = trace.get_current_span()
     if span and correlation_id:
         span.set_attribute("correlation_id", correlation_id)
 
-    # Log the activity in App B.
-    # The OTELFormatter in otel_setup.py will pick up the correlation_id from baggage
-    # and include it in the console log output.
-    logger.info("App B: /data endpoint called")
-    return "Hello from App B"
+    # Format message with timestamp included
+    current_time = datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]
+    message_text = f"Hello from App B at {current_time} IST"
+
+    message = {
+        "message": message_text,
+        "correlation_id": correlation_id
+    }
+
+    # Kafka headers
+    kafka_headers = []
+    # if correlation_id is not None and isinstance(correlation_id, str):
+    #     kafka_headers.append((b"correlation_id", correlation_id.encode("utf-8")))
+
+    try:
+        producer.send(
+            KAFKA_TOPIC,
+            key=correlation_id or "unknown",
+            value=message,
+            headers=kafka_headers
+        )
+        producer.flush()
+        logger.info(f"Kafka message sent with timestamp in message field {current_time}")
+    except Exception as e:
+        logger.error(f"Failed to send Kafka message: {e}")
+
+    return "Message sent to Kafka"
 
 if __name__ == "__main__":
     logger.info("App B starting on port 5001")

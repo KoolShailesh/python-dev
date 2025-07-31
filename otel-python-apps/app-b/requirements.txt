@@ -1,11 +1,21 @@
+# Flask App
 flask==2.3.3
 requests==2.31.0
 
+# Kafka Client
+kafka-python==2.0.2
+
+# OpenTelemetry Core
 opentelemetry-api==1.24.0
 opentelemetry-sdk==1.24.0
 opentelemetry-exporter-otlp==1.24.0
 
+# OpenTelemetry Instrumentation
 opentelemetry-instrumentation==0.45b0
 opentelemetry-instrumentation-flask==0.45b0
 opentelemetry-instrumentation-requests==0.45b0
 opentelemetry-instrumentation-logging==0.45b0
+opentelemetry-instrumentation-kafka-python==0.45b0
+
+# AWS X-Ray Propagator (for correlation IDs)
+opentelemetry-propagator-aws-xray==1.0.1

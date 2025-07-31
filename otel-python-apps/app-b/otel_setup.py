@@ -16,7 +16,7 @@ from opentelemetry.instrumentation.requests import RequestsInstrumentor
 from opentelemetry.instrumentation.logging import LoggingInstrumentor
 
 # OTEL Collector endpoint
-OTEL_COLLECTOR_HOST = "3.82.145.211"
+OTEL_COLLECTOR_HOST = "34.238.44.149"
 OTEL_COLLECTOR_PORT = "4318"
 OTEL_COLLECTOR_BASE_URL = f"http://{OTEL_COLLECTOR_HOST}:{OTEL_COLLECTOR_PORT}"
 
