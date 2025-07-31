@@ -40,9 +40,14 @@ def data():
     }
 
     # Kafka headers
+    # Kafka headers
     kafka_headers = []
-    # if correlation_id is not None and isinstance(correlation_id, str):
-    #     kafka_headers.append((b"correlation_id", correlation_id.encode("utf-8")))
+    try:
+        if correlation_id and isinstance(correlation_id, str):
+            kafka_headers.append(("correlation_id", str(correlation_id).encode("utf-8")))
+        logger.info(f"Kafka headers: {kafka_headers}")
+    except Exception as e:
+        logger.error(f"Failed to encode correlation_id header: {e}")
 
     try:
         producer.send(
@@ -54,7 +59,8 @@ def data():
         producer.flush()
         logger.info(f"Kafka message sent with timestamp in message field {current_time}")
     except Exception as e:
-        logger.error(f"Failed to send Kafka message: {e}")
+         logger.error(f"Failed to send Kafka message: {e}", exc_info=True)
+
 
     return "Message sent to Kafka"
 
